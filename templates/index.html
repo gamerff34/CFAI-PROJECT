@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Algorithm & Data Structure Performance Analyzer</title>
+    <!-- Google Fonts: Outfit and JetBrains Mono -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- CSS stylesheet -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="glass-bg-wrapper">
+        <div class="glow-orb orb-1"></div>
+        <div class="glow-orb orb-2"></div>
+        <div class="glow-orb orb-3"></div>
+    </div>
+
+    <header class="navbar">
+        <div class="nav-container">
+            <a href="#" class="brand-logo">
+                <span class="logo-accent">&lt;</span>CFAI<span class="logo-accent"> /&gt;</span>
+                <span class="brand-title">PerfAnalyzer</span>
+            </a>
+            <div class="nav-links">
+                <a href="#sorting" class="nav-link active" data-tab="sorting-tab">Sorting</a>
+                <a href="#searching" class="nav-link" data-tab="searching-tab">Searching</a>
+                <a href="#membership" class="nav-link" data-tab="membership-tab">Membership</a>
+            </div>
+        </div>
+    </header>
+
+    <main class="main-content">
+        <section class="hero-section">
+            <h1 class="hero-title">Algorithm &amp; Data Structure <br><span class="gradient-text">Performance Analyzer</span></h1>
+            <p class="hero-subtitle">An educational playground to analyze, benchmark, and visualize practical execution runtimes versus theoretical complexities in real-time.</p>
+        </section>
+
+        <!-- Tabs Container -->
+        <div class="tab-content-container">
+            
+            <!-- SORTING MODULE -->
+            <div id="sorting-tab" class="tab-pane active">
+                <div class="grid-layout">
+                    <!-- Input Card -->
+                    <div class="glass-card input-card">
+                        <div class="card-header">
+                            <span class="card-icon">⚡</span>
+                            <h2>Sorting Module</h2>
+                        </div>
+                        <p class="card-desc">Compare the runtimes of <strong>Bubble Sort</strong>, <strong>Merge Sort</strong>, and <strong>Quick Sort</strong>.</p>
+                        
+                        <div class="form-group">
+                            <label for="sort-input">Enter Comma-Separated Numbers:</label>
+                            <textarea id="sort-input" placeholder="e.g. 45, 12, 85, 32, 4, 90, 61, 22, 54, 73"></textarea>
+                        </div>
+
+                        <div class="button-group">
+                            <button id="btn-generate-sort" class="btn btn-secondary">🎲 Generate Random List</button>
+                            <button id="btn-run-sort" class="btn btn-primary">🚀 Run Sorting Benchmark</button>
+                        </div>
+
+                        <div class="generator-options">
+                            <label for="sort-size">Random Array Size:</label>
+                            <select id="sort-size">
+                                <option value="50">50 Elements</option>
+                                <option value="200" selected>200 Elements</option>
+                                <option value="500">500 Elements</option>
+                                <option value="1000">1000 Elements (Slow for Bubble)</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Performance Visualizer & Results Card -->
+                    <div class="glass-card results-card" id="sort-results-card">
+                        <div class="no-results-placeholder">
+                            <div class="placeholder-icon">📊</div>
+                            <h3>Waiting for benchmark execution...</h3>
+                            <p>Configure input on the left and run the benchmark to visualize performance.</p>
+                        </div>
+                        
+                        <div class="results-content hidden">
+                            <div class="badge-container">
+                                <span class="winner-badge">Fastest: <strong id="sort-winner-name">-</strong></span>
+                            </div>
+                            <h3>Runtime Comparison</h3>
+                            <div class="chart-container">
+                                <canvas id="sortChart"></canvas>
+                            </div>
+                            
+                            <div class="output-preview">
+                                <h4>Sorted Output Preview:</h4>
+                                <div id="sort-output-array" class="code-block"></div>
+                            </div>
+
+                            <div class="complexity-table-wrapper">
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <th>Algorithm</th>
+                                            <th>Runtime (ms)</th>
+                                            <th>Time Complexity</th>
+                                            <th>Space Complexity</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr id="row-bubble">
+                                            <td>Bubble Sort</td>
+                                            <td class="runtime">-</td>
+                                            <td><code class="complex-bad">O(N²)</code></td>
+                                            <td><code>O(1)</code></td>
+                                        </tr>
+                                        <tr id="row-merge">
+                                            <td>Merge Sort</td>
+                                            <td class="runtime">-</td>
+                                            <td><code class="complex-good">O(N log N)</code></td>
+                                            <td><code>O(N)</code></td>
+                                        </tr>
+                                        <tr id="row-quick">
+                                            <td>Quick Sort</td>
+                                            <td class="runtime">-</td>
+                                            <td><code class="complex-good">O(N log N)</code></td>
+                                            <td><code>O(log N)</code></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SEARCHING MODULE -->
+            <div id="searching-tab" class="tab-pane">
+                <div class="grid-layout">
+                    <!-- Input Card -->
+                    <div class="glass-card input-card">
+                        <div class="card-header">
+                            <span class="card-icon">🔍</span>
+                            <h2>Searching Module</h2>
+                        </div>
+                        <p class="card-desc">Benchmark <strong>Linear Search</strong> vs <strong>Binary Search</strong>. Binary search is run on a pre-sorted array copy; we measure only the search duration.</p>
+                        
+                        <div class="form-group">
+                            <label for="search-input">Enter Array Elements (Comma-Separated):</label>
+                            <textarea id="search-input" placeholder="e.g. 10, 23, 45, 70, 11, 15, 88, 92"></textarea>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="search-target">Target Element to Find:</label>
+                            <input type="number" id="search-target" placeholder="e.g. 70">
+                        </div>
+
+                        <div class="button-group">
+                            <button id="btn-generate-search" class="btn btn-secondary">🎲 Generate Large Dataset</button>
+                            <button id="btn-run-search" class="btn btn-primary">🚀 Run Search Benchmark</button>
+                        </div>
+
+                        <div class="generator-options">
+                            <label for="search-size">Dataset Size:</label>
+                            <select id="search-size">
+                                <option value="1000">1,000 Elements</option>
+                                <option value="5000" selected>5,000 Elements</option>
+                                <option value="20000">20,000 Elements</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Performance Visualizer & Results Card -->
+                    <div class="glass-card results-card" id="search-results-card">
+                        <div class="no-results-placeholder">
+                            <div class="placeholder-icon">📊</div>
+                            <h3>Waiting for benchmark execution...</h3>
+                            <p>Configure array and target value on the left and start the benchmark.</p>
+                        </div>
+                        
+                        <div class="results-content hidden">
+                            <div class="results-meta">
+                                <span class="winner-badge">Fastest: <strong id="search-winner-name">-</strong></span>
+                                <span id="search-status-badge" class="status-badge found">Found</span>
+                            </div>
+                            <h3>Runtime Comparison</h3>
+                            <div class="chart-container">
+                                <canvas id="searchChart"></canvas>
+                            </div>
+
+                            <div class="output-preview">
+                                <h4>Search Indices Result:</h4>
+                                <div class="index-grid">
+                                    <div class="index-card">
+                                        <span class="index-label">Linear Search Index</span>
+                                        <span id="search-linear-idx" class="index-val">-</span>
+                                    </div>
+                                    <div class="index-card">
+                                        <span class="index-label">Binary Search Index (Sorted Array)</span>
+                                        <span id="search-binary-idx" class="index-val">-</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="complexity-table-wrapper">
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <th>Algorithm</th>
+                                            <th>Runtime (ms)</th>
+                                            <th>Time Complexity</th>
+                                            <th>Space Complexity</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr id="row-linear">
+                                            <td>Linear Search</td>
+                                            <td class="runtime">-</td>
+                                            <td><code class="complex-bad">O(N)</code></td>
+                                            <td><code>O(1)</code></td>
+                                        </tr>
+                                        <tr id="row-binary">
+                                            <td>Binary Search</td>
+                                            <td class="runtime">-</td>
+                                            <td><code class="complex-good">O(log N)</code></td>
+                                            <td><code>O(1)</code></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- MEMBERSHIP MODULE -->
+            <div id="membership-tab" class="tab-pane">
+                <div class="grid-layout">
+                    <!-- Input Card -->
+                    <div class="glass-card input-card">
+                        <div class="card-header">
+                            <span class="card-icon">⚡</span>
+                            <h2>Membership Module</h2>
+                        </div>
+                        <p class="card-desc">Compare the performance of lookup checks in a Python <strong>List</strong> vs a Python <strong>Set</strong>. Benchmarks lookups over multiple iterations.</p>
+                        
+                        <div class="form-group">
+                            <label for="membership-input">Enter Numbers (Duplicates allowed):</label>
+                            <textarea id="membership-input" placeholder="e.g. 5, 12, 9, 5, 23, 12, 8, 9, 3, 5, 17"></textarea>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="membership-target">Target Element to Check:</label>
+                            <input type="number" id="membership-target" placeholder="e.g. 23">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="membership-iterations">Benchmark Lookup Iterations:</label>
+                            <input type="number" id="membership-iterations" value="10000" min="1000" max="100000">
+                            <span class="input-hint">High iterations show stable runtime differences.</span>
+                        </div>
+
+                        <div class="button-group">
+                            <button id="btn-generate-membership" class="btn btn-secondary">🎲 Generate Large Dataset</button>
+                            <button id="btn-run-membership" class="btn btn-primary">🚀 Run Membership Benchmark</button>
+                        </div>
+
+                        <div class="generator-options">
+                            <label for="membership-size">Dataset Size:</label>
+                            <select id="membership-size">
+                                <option value="2000">2,000 Elements</option>
+                                <option value="10000" selected>10,000 Elements</option>
+                                <option value="50000">50,000 Elements</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Performance Visualizer & Results Card -->
+                    <div class="glass-card results-card" id="membership-results-card">
+                        <div class="no-results-placeholder">
+                            <div class="placeholder-icon">📊</div>
+                            <h3>Waiting for benchmark execution...</h3>
+                            <p>Configure lookup properties on the left and trigger the benchmark.</p>
+                        </div>
+                        
+                        <div class="results-content hidden">
+                            <div class="badge-container">
+                                <span class="winner-badge">Winner: <strong id="membership-winner-name">-</strong></span>
+                            </div>
+                            <h3>Runtime Comparison</h3>
+                            <div class="chart-container">
+                                <canvas id="membershipChart"></canvas>
+                            </div>
+
+                            <div class="info-callout">
+                                <strong>Why set is faster:</strong> Python sets are implemented as hash tables. Average-case lookup is <code>O(1)</code>, which is constant time regardless of size. Lists require sequential scanning, resulting in <code>O(N)</code> lookup.
+                            </div>
+                            
+                            <div class="complexity-table-wrapper">
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <th>Structure Type</th>
+                                            <th>Total Time (ms)</th>
+                                            <th>Average Time per Lookup (ns)</th>
+                                            <th>Complexity</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr id="row-list-member">
+                                            <td>List Membership</td>
+                                            <td class="runtime">-</td>
+                                            <td class="avg-time">-</td>
+                                            <td><code class="complex-bad">O(N)</code></td>
+                                        </tr>
+                                        <tr id="row-set-member">
+                                            <td>Set Membership</td>
+                                            <td class="runtime">-</td>
+                                            <td class="avg-time">-</td>
+                                            <td><code class="complex-good">O(1)</code></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <footer class="footer">
+        <div class="footer-container">
+            <p>&copy; 2026 Algorithm &amp; Data Structure Performance Analyzer. All rights reserved.</p>
+            <p class="team-credits">Developed by: <span class="team-name">ANSHUL</span> &amp; <span class="team-name">RAJVEER</span></p>
+        </div>
+    </footer>
+    
+    <!-- Client JavaScript files -->
+    <script src="{{ url_for('static', filename='charts.js') }}"></script>
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>
